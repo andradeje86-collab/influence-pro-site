@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="description" content="Influence PRO — Gestão completa para micro influenciadores. Controle suas publis, agenda, metas e ganhe com indicações."/>
+  <title>Influence PRO — Gestão para Micro Influenciadores</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#07070F;--surface:#0F0F1C;--border:#1A1A2E;--text:#EAE8F5;--sub:#6B6880;--accent:#7C6AF7;--accent2:#EC4899;--green:#34D399;--yellow:#FBBF24;--red:#F87171;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+    ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+    body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.4;}
+
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(7,7,15,.95) 0%,transparent 100%);backdrop-filter:blur(12px);}
+    .nav-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-cta{background:linear-gradient(135deg,var(--accent),#6366F1);border:none;border-radius:50px;padding:10px 24px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;transition:all .2s;box-shadow:0 0 20px rgba(124,106,247,.3);}
+    .nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,106,247,.5);}
+
+    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;position:relative;overflow:hidden;}
+    .hero-glow{position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(124,106,247,.15) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none;}
+    .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.3);border-radius:50px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--accent);margin-bottom:28px;animation:fadeUp .6s ease both;}
+    .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    h1{font-family:'Syne',sans-serif;font-size:clamp(40px,8vw,84px);font-weight:800;line-height:.95;letter-spacing:-2px;margin-bottom:24px;animation:fadeUp .6s .1s ease both;}
+    .grad{background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero-sub{font-size:clamp(15px,2.5vw,19px);color:var(--sub);max-width:540px;line-height:1.7;margin-bottom:44px;animation:fadeUp .6s .2s ease both;}
+    .btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;animation:fadeUp .6s .3s ease both;}
+    .btn-p{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),#6366F1);border:none;border-radius:50px;padding:15px 34px;color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;transition:all .25s;box-shadow:0 4px 24px rgba(124,106,247,.4);}
+    .btn-p:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(124,106,247,.6);}
+    .btn-s{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--border);border-radius:50px;padding:15px 34px;color:var(--sub);font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;transition:all .25s;}
+    .btn-s:hover{border-color:var(--accent);color:var(--text);transform:translateY(-2px);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .phone-wrap{position:relative;margin-top:70px;animation:fadeUp .8s .4s ease both;}
+    .phone{width:260px;height:530px;background:var(--surface);border-radius:38px;border:1px solid var(--border);box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 0 1px rgba(124,106,247,.1),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden;display:flex;flex-direction:column;padding:18px 14px;}
+    .p-notch{width:70px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
+    .p-logo{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;line-height:1;margin-bottom:3px;}
+    .p-sub{font-size:9px;letter-spacing:5px;color:var(--sub);text-align:center;margin-bottom:20px;}
+    .p-hero{background:rgba(124,106,247,.12);border:1px solid rgba(124,106,247,.2);border-radius:14px;padding:12px;margin-bottom:8px;}
+    .p-label{font-size:8px;color:var(--sub);font-weight:700;letter-spacing:2px;margin-bottom:3px;}
+    .p-big{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text);}
+    .p-sm{font-size:9px;color:var(--sub);margin-top:1px;}
+    .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+    .p-mini{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:8px 10px;}
+    .p-mini-v{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+    .p-mini-l{font-size:8px;color:var(--sub);}
+    .p-row{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+    .p-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;}
+    .p-pill{display:inline-flex;align-items:center;padding:1px 6px;border-radius:20px;font-size:7px;font-weight:700;}
+    .p-nav{display:flex;border-top:1px solid var(--border);padding-top:8px;margin-top:auto;}
+    .p-nav-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:7px;color:var(--sub);}
+    .p-nav-i.on{color:var(--accent);}
+    .phone-glow{position:absolute;bottom:-50px;left:50%;transform:translateX(-50%);width:180px;height:100px;background:radial-gradient(ellipse,rgba(124,106,247,.25),transparent 70%);}
+
+    .stats{padding:50px 40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:70px;flex-wrap:wrap;}
+    .stat-v{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .stat-l{font-size:12px;color:var(--sub);margin-top:4px;}
+
+    .sec{padding:90px 40px;max-width:1080px;margin:0 auto;}
+    .sec-tag{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--accent);margin-bottom:14px;text-transform:uppercase;}
+    .sec-h{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,46px);font-weight:800;line-height:1.1;margin-bottom:14px;}
+    .sec-p{font-size:15px;color:var(--sub);max-width:500px;line-height:1.7;margin-bottom:55px;}
+    .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}
+    .feat{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;transition:all .3s;position:relative;overflow:hidden;}
+    .feat:hover{border-color:rgba(124,106,247,.3);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.3);}
+    .feat-ico{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:18px;}
+    .feat-t{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:9px;}
+    .feat-d{font-size:13px;color:var(--sub);line-height:1.7;}
+
+    .ref-sec{padding:90px 40px;background:linear-gradient(180deg,transparent,rgba(124,106,247,.04),transparent);}
+    .ref-in{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;}
+    .lvl-row{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:13px;padding:14px 18px;margin-bottom:10px;transition:all .2s;}
+    .lvl-row:hover{border-color:rgba(124,106,247,.25);transform:translateX(4px);}
+    .lvl-pct{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;min-width:54px;}
+    .tree-box{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:24px;}
+    .t-node{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .t-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;}
+    .t-earn{font-family:'Syne',sans-serif;font-weight:800;color:var(--green);}
+
+    .plans-sec{padding:90px 40px;}
+    .plans-in{max-width:860px;margin:0 auto;}
+    .plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:55px;}
+    .plan{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:32px;position:relative;transition:all .3s;}
+    .plan.hot{border-color:var(--accent);background:linear-gradient(135deg,rgba(124,106,247,.08),rgba(99,102,241,.04));box-shadow:0 0 50px rgba(124,106,247,.12);}
+    .plan-badge{position:absolute;top:-11px;right:18px;background:linear-gradient(135deg,var(--accent),#6366F1);color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px;letter-spacing:1px;}
+    .plan-n{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
+    .plan-price{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1;margin-bottom:4px;}
+    .plan-price span{font-size:14px;font-weight:400;color:var(--sub);}
+    .plan-per{font-size:12px;color:var(--sub);margin-bottom:24px;}
+    .plan-div{height:1px;background:var(--border);margin-bottom:20px;}
+    .plan-f{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px;color:var(--sub);}
+    .ck{color:var(--green);font-size:14px;flex-shrink:0;}
+    .lk{color:var(--border);font-size:14px;flex-shrink:0;}
+    .plan-btn{display:block;width:100%;padding:13px;border-radius:50px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;text-align:center;cursor:pointer;text-decoration:none;transition:all .25s;margin-top:24px;}
+    .plan-btn.fr{background:transparent;border:1px solid var(--border);color:var(--sub);}
+    .plan-btn.fr:hover{border-color:var(--accent);color:var(--text);}
+    .plan-btn.pr{background:linear-gradient(135deg,var(--accent),#6366F1);border:none;color:#fff;box-shadow:0 4px 20px rgba(124,106,247,.4);}
+    .plan-btn.pr:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(124,106,247,.6);}
+
+    .pix-sec{background:linear-gradient(135deg,rgba(124,106,247,.08),rgba(236,72,153,.04));border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:55px 40px;text-align:center;}
+    .pix-key{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,50px);font-weight:800;color:var(--accent);letter-spacing:4px;margin:18px 0;}
+    .pix-copy-btn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:10px 22px;color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;margin-top:6px;}
+    .pix-copy-btn:hover{border-color:var(--accent);background:rgba(124,106,247,.1);}
+
+    .testi-sec{padding:90px 40px;max-width:1080px;margin:0 auto;}
+    .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:55px;}
+    .testi{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px;}
+    .testi-stars{color:var(--yellow);font-size:14px;margin-bottom:14px;}
+    .testi-t{font-size:14px;color:var(--sub);line-height:1.7;margin-bottom:18px;font-style:italic;}
+    .testi-a{display:flex;align-items:center;gap:10px;}
+    .testi-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6366F1);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;}
+    .testi-n{font-weight:700;font-size:13px;}
+    .testi-h{font-size:11px;color:var(--sub);}
+
+    .cta-sec{padding:110px 40px;text-align:center;position:relative;overflow:hidden;}
+    .cta-glow{position:absolute;width:700px;height:350px;background:radial-gradient(ellipse,rgba(124,106,247,.1),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+    .cta-h{font-family:'Syne',sans-serif;font-size:clamp(30px,6vw,64px);font-weight:800;line-height:1.05;margin-bottom:22px;}
+    .cta-p{font-size:17px;color:var(--sub);margin-bottom:44px;max-width:480px;margin-left:auto;margin-right:auto;}
+
+    footer{border-top:1px solid var(--border);padding:36px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+    .f-logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:3px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .f-t{font-size:12px;color:var(--sub);}
+
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+
+    @media(max-width:768px){
+      nav{padding:14px 18px;}
+      .stats{gap:36px;padding:36px 18px;}
+      .ref-in{grid-template-columns:1fr;}
+      .plans-grid{grid-template-columns:1fr;}
+      .sec{padding:55px 18px;}
+      .ref-sec{padding:55px 18px;}
+      .plans-sec{padding:55px 18px;}
+      .pix-sec{padding:36px 18px;}
+      .testi-sec{padding:55px 18px;}
+      .cta-sec{padding:70px 18px;}
+      footer{padding:24px 18px;flex-direction:column;text-align:center;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">INFLUENCE PRO</div>
+  <a href="https://andradeje86-collab.github.io/Influence-pro3" class="nav-cta" target="_blank">📱 Acessar App →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge"><span class="badge-dot"></span> Plataforma para Micro Influenciadores</div>
+  <h1><span class="grad">Gerencie sua</span><br/>carreira de<br/><span class="grad">influenciador</span></h1>
+  <p class="hero-sub">Controle publis, agenda, metas e ganhe dinheiro indicando amigos. Tudo em um único app simples e poderoso.</p>
+  <div class="btns">
+    <a href="https://andradeje86-collab.github.io/Influence-pro3" class="btn-p" target="_blank">📱 Acessar Grátis</a>
+    <a href="#features" class="btn-s">Ver funcionalidades ↓</a>
+  </div>
+
+  <!-- Phone -->
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="p-notch"></div>
+      <div class="p-logo">INFLUENCE</div>
+      <div class="p-sub">PRO</div>
+      <div class="p-hero">
+        <div class="p-label">FATURAMENTO TOTAL</div>
+        <div class="p-big" id="phone-val">R$ 2.880</div>
+        <div class="p-sm">+ 3 permutas este mês</div>
+      </div>
+      <div class="p-grid">
+        <div class="p-mini"><div class="p-mini-v" style="color:#FBBF24">4</div><div class="p-mini-l">Publis semana</div></div>
+        <div class="p-mini"><div class="p-mini-v" style="color:#34D399">R$2,80</div><div class="p-mini-l">Ganhos ref.</div></div>
+      </div>
+      <div style="font-size:8px;color:var(--sub);font-weight:700;letter-spacing:2px;margin-bottom:6px">ÚLTIMAS PUBLIS</div>
+      <div class="p-row">
+        <div class="p-ico" style="background:rgba(248,113,113,.15);color:#F87171">FN</div>
+        <div style="flex:1"><div style="font-size:10px;font-weight:700">FitNow Suplementos</div><div style="display:flex;gap:3px;margin-top:1px"><span class="p-pill" style="background:rgba(248,113,113,.2);color:#F87171">Reels</span><span class="p-pill" style="background:rgba(52,211,153,.2);color:#34D399">✓ postado</span></div></div>
+        <div style="font-size:11px;font-weight:700;color:#34D399">R$800</div>
+      </div>
+      <div class="p-row">
+        <div class="p-ico" style="background:rgba(251,191,36,.15);color:#FBBF24">MV</div>
+        <div style="flex:1"><div style="font-size:10px;font-weight:700">Moda Vibe</div><div style="display:flex;gap:3px;margin-top:1px"><span class="p-pill" style="background:rgba(248,113,113,.2);color:#F87171">Reels</span><span class="p-pill" style="background:rgba(251,191,36,.2);color:#FBBF24">⏳ pendente</span></div></div>
+        <div style="font-size:11px;font-weight:700;color:#34D399">R$1.200</div>
+      </div>
+      <div class="p-nav">
+        <div class="p-nav-i on"><span style="font-size:13px">⬡</span>Home</div>
+        <div class="p-nav-i"><span style="font-size:13px">◈</span>Publis</div>
+        <div class="p-nav-i"><span style="font-size:13px">◷</span>Agenda</div>
+        <div class="p-nav-i"><span style="font-size:13px">◎</span>Metas</div>
+        <div class="p-nav-i"><span style="font-size:13px">⬟</span>Rede</div>
+      </div>
+    </div>
+    <div class="phone-glow"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats reveal">
+  <div><div class="stat-v">100%</div><div class="stat-l">Gratuito para começar</div></div>
+  <div><div class="stat-v">3</div><div class="stat-l">Níveis de indicação</div></div>
+  <div><div class="stat-v">R$10</div><div class="stat-l">Plano Premium/mês</div></div>
+  <div><div class="stat-v">∞</div><div class="stat-l">Publis no Premium</div></div>
+</div>
+
+<!-- FEATURES -->
+<section class="sec" id="features">
+  <p class="sec-tag reveal">Funcionalidades</p>
+  <h2 class="sec-h reveal">Tudo que você precisa<br/>para crescer</h2>
+  <p class="sec-p reveal">Do controle de publis até a gestão de indicações — centralize sua carreira em um só lugar.</p>
+  <div class="feat-grid">
+    <div class="feat reveal"><div class="feat-ico" style="background:rgba(251,191,36,.15)">📸</div><div class="feat-t">Gestão de Publis</div><div class="feat-d">Registre cada publicação com marca, tipo (Reels, Feed, Story), valor e status. Alertas automáticos de entregas atrasadas.</div></div>
+    <div class="feat reveal"><div class="feat-ico" style="background:rgba(124,106,247,.15)">📅</div><div class="feat-t">Agenda Inteligente</div><div class="feat-d">Calendário visual com check-list por postagem. Ao cadastrar uma publi, ela vai automaticamente para a agenda na data certa.</div></div>
+    <div class="feat reveal"><div class="feat-ico" style="background:rgba(52,211,153,.15)">🎯</div><div class="feat-t">Metas Personalizadas</div><div class="feat-d">Defina e acompanhe metas de seguidores, faturamento e engajamento com barras de progresso em tempo real.</div></div>
+    <div class="feat reveal"><div class="feat-ico" style="background:rgba(248,113,113,.15)">📣</div><div class="feat-t">Alertas de Entrega</div><div class="feat-d">Notificações quando uma publi está vencendo hoje ou atrasada. Nunca mais perca um prazo com uma marca.</div></div>
+    <div class="feat reveal"><div class="feat-ico" style="background:rgba(236,72,153,.15)">🧬</div><div class="feat-t">Rede de Indicação</div><div class="feat-d">Indique amigos e ganhe em 3 níveis: 10% dos diretos, 5% dos indiretos e 3% da terceira linha. Renda passiva real.</div></div>
+    <div class="feat reveal"><div class="feat-ico" style="background:rgba(96,165,250,.15)">💸</div><div class="feat-t">Saque via PIX</div><div class="feat-d">Solicite saque das comissões via PIX diretamente pelo app. Disponível no Premium com saldo acumulado.</div></div>
+  </div>
+</section>
+
+<!-- REFERRAL -->
+<section class="ref-sec" id="indicacao">
+  <div class="ref-in">
+    <div class="reveal">
+      <p class="sec-tag">Programa de Indicação</p>
+      <h2 class="sec-h">Ganhe enquanto<br/>dorme 💰</h2>
+      <p class="sec-p" style="margin-bottom:36px">Compartilhe seu link único. Cada pessoa Premium que se cadastrar gera comissão recorrente em 3 níveis.</p>
+      <div class="lvl-row reveal"><div class="lvl-pct" style="color:var(--accent)">10%</div><div><div style="font-weight:700;margin-bottom:2px">1ª Linha — Indicação direta</div><div style="font-size:12px;color:var(--sub)">De cada Premium que você indicar</div></div></div>
+      <div class="lvl-row reveal"><div class="lvl-pct" style="color:#6366F1">5%</div><div><div style="font-weight:700;margin-bottom:2px">2ª Linha — Indicado do indicado</div><div style="font-size:12px;color:var(--sub)">Quando seu indicado trouxer alguém</div></div></div>
+      <div class="lvl-row reveal"><div class="lvl-pct" style="color:#60A5FA">3%</div><div><div style="font-weight:700;margin-bottom:2px">3ª Linha — Terceira geração</div><div style="font-size:12px;color:var(--sub)">A rede continua trabalhando por você</div></div></div>
+    </div>
+    <div class="tree-box reveal">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--sub);margin-bottom:18px">SUA REDE</div>
+      <div class="t-node"><div class="t-av" style="width:42px;height:42px;background:linear-gradient(135deg,var(--accent),#6366F1);font-size:12px">VC</div><div style="flex:1"><div style="font-weight:700;font-size:13px">Você</div><div style="font-size:10px;color:var(--sub)">Principal</div></div><div class="t-earn" style="font-size:15px">R$3,80/mês</div></div>
+      <div style="width:2px;height:16px;background:var(--border);margin-left:20px;margin-bottom:2px"></div>
+      <div style="padding-left:18px;border-left:2px dashed rgba(124,106,247,.2)">
+        <div class="t-node"><div class="t-av" style="width:36px;height:36px;background:linear-gradient(135deg,#34D399,#059669);font-size:11px">LC</div><div style="flex:1"><div style="font-weight:700;font-size:12px">Lucas Costa</div><div style="font-size:9px;color:var(--sub)">L1 · Premium</div></div><div style="color:#34D399;font-weight:700;font-size:13px">+R$1,00</div></div>
+        <div style="padding-left:16px;border-left:2px dashed rgba(99,102,241,.2);margin-left:17px">
+          <div class="t-node"><div class="t-av" style="width:30px;height:30px;background:linear-gradient(135deg,#6366F1,#818CF8);font-size:10px">AM</div><div style="flex:1"><div style="font-weight:700;font-size:11px">Ana M.</div><div style="font-size:9px;color:var(--sub)">L2 · Premium</div></div><div style="color:#6366F1;font-weight:700;font-size:12px">+R$0,50</div></div>
+          <div style="padding-left:14px;border-left:2px dashed rgba(96,165,250,.2);margin-left:14px">
+            <div class="t-node"><div class="t-av" style="width:26px;height:26px;background:linear-gradient(135deg,#60A5FA,#3B82F6);font-size:9px">PF</div><div style="flex:1"><div style="font-weight:700;font-size:10px">Pedro F.</div><div style="font-size:9px;color:var(--sub)">L3 · Premium</div></div><div style="color:#60A5FA;font-weight:700;font-size:11px">+R$0,30</div></div>
+          </div>
+        </div>
+        <div class="t-node" style="margin-top:6px"><div class="t-av" style="width:36px;height:36px;background:linear-gradient(135deg,#34D399,#059669);font-size:11px">RB</div><div style="flex:1"><div style="font-weight:700;font-size:12px">Rafael B.</div><div style="font-size:9px;color:var(--sub)">L1 · Premium</div></div><div style="color:#34D399;font-weight:700;font-size:13px">+R$1,00</div></div>
+      </div>
+      <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:14px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:var(--sub)">Total mensal</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#34D399">R$ 3,80</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS -->
+<section class="plans-sec" id="planos">
+  <div class="plans-in">
+    <p class="sec-tag reveal" style="text-align:center">Planos</p>
+    <h2 class="sec-h reveal" style="text-align:center">Comece grátis,<br/>cresça no Premium</h2>
+    <div class="plans-grid">
+      <div class="plan reveal">
+        <div class="plan-n" style="color:var(--sub)">Free</div>
+        <div class="plan-price" style="color:var(--text)">R$0<span>/mês</span></div>
+        <div class="plan-per">Para começar</div>
+        <div class="plan-div"></div>
+        <div class="plan-f"><span class="ck">✓</span>Até 5 publis/mês</div>
+        <div class="plan-f"><span class="ck">✓</span>Dashboard básico</div>
+        <div class="plan-f"><span class="ck">✓</span>Calendário de postagens</div>
+        <div class="plan-f"><span class="ck">✓</span>1 meta ativa</div>
+        <div class="plan-f"><span class="ck">✓</span>Programa de indicação</div>
+        <div class="plan-f"><span class="lk">✗</span>Publis ilimitadas</div>
+        <div class="plan-f"><span class="lk">✗</span>Saque de comissões</div>
+        <a href="https://andradeje86-collab.github.io/Influence-pro3" class="plan-btn fr" target="_blank">Começar Grátis</a>
+      </div>
+      <div class="plan hot reveal">
+        <div class="plan-badge">MAIS POPULAR</div>
+        <div class="plan-n" style="color:var(--accent)">Premium ✦</div>
+        <div class="plan-price" style="color:var(--accent)">R$10<span>/mês</span></div>
+        <div class="plan-per">Tudo incluso</div>
+        <div class="plan-div"></div>
+        <div class="plan-f"><span class="ck">✓</span>Publis <strong>ILIMITADAS</strong></div>
+        <div class="plan-f"><span class="ck">✓</span>Dashboard completo</div>
+        <div class="plan-f"><span class="ck">✓</span>Metas avançadas ilimitadas</div>
+        <div class="plan-f"><span class="ck">✓</span>Calendário + notificações</div>
+        <div class="plan-f"><span class="ck">✓</span>Dicas diárias de vendas</div>
+        <div class="plan-f"><span class="ck">✓</span>Relatórios mensais</div>
+        <div class="plan-f"><span class="ck">✓</span>Programa de indicação</div>
+        <div class="plan-f"><span class="ck">✓</span><strong>Saque de comissões via PIX</strong></div>
+        <a href="#pix-section" class="plan-btn pr" onclick="document.getElementById('pix-section').scrollIntoView({behavior:'smooth'});return false;">Assinar por R$10/mês →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIX -->
+<div class="pix-sec reveal" id="pix-section">
+  <p style="font-size:10px;font-weight:700;letter-spacing:3px;color:var(--accent);margin-bottom:10px">ASSINATURA PREMIUM</p>
+  <h3 style="font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,34px);font-weight:800;margin-bottom:8px">Pague R$10 via PIX e ative seu Premium</h3>
+  <p style="font-size:14px;color:var(--sub);margin-bottom:6px">Após o pagamento, envie o comprovante no app. Ativação em até 24h.</p>
+  <div class="pix-key">06981774950</div>
+  <p style="font-size:11px;color:var(--sub);margin-bottom:10px">CPF · Influence PRO</p>
+  <button class="pix-copy-btn" id="pix-btn" onclick="copyPix()">📋 Copiar Chave PIX</button>
+  <div style="margin-top:20px;font-size:12px;color:var(--sub)">No app: <strong style="color:var(--text)">Menu Planos → Assinar Premium → Já fiz o PIX</strong></div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testi-sec">
+  <p class="sec-tag reveal" style="text-align:center">Depoimentos</p>
+  <h2 class="sec-h reveal" style="text-align:center">Quem já usa o<br/>Influence PRO</h2>
+  <div class="testi-grid">
+    <div class="testi reveal"><div class="testi-stars">★★★★★</div><p class="testi-t">"Finalmente organizei todas as minhas publis em um só lugar. A agenda com checklist é um diferencial enorme!"</p><div class="testi-a"><div class="testi-av">CR</div><div><div class="testi-n">Camila Rocha</div><div class="testi-h">@camilarocha · 48k seguidores</div></div></div></div>
+    <div class="testi reveal"><div class="testi-stars">★★★★★</div><p class="testi-t">"O sistema de indicações é incrível. Já ganhei R$47 só indicando amigos influenciadores para a plataforma!"</p><div class="testi-a"><div class="testi-av" style="background:linear-gradient(135deg,#34D399,#059669)">RM</div><div><div class="testi-n">Rafael Mendes</div><div class="testi-h">@rafamendes · 12k seguidores</div></div></div></div>
+    <div class="testi reveal"><div class="testi-stars">★★★★★</div><p class="testi-t">"Por apenas R$10/mês tenho controle total das campanhas. Nunca mais perdi prazo de entrega com uma marca!"</p><div class="testi-a"><div class="testi-av" style="background:linear-gradient(135deg,#F87171,#EC4899)">BL</div><div><div class="testi-n">Beatriz Lima</div><div class="testi-h">@bialima · 8.9k seguidores</div></div></div></div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-sec">
+  <div class="cta-glow"></div>
+  <p class="sec-tag reveal" style="text-align:center">Comece agora</p>
+  <h2 class="cta-h reveal"><span class="grad">Sua carreira de<br/>influenciador</span><br/>organizada hoje</h2>
+  <p class="cta-p reveal">Grátis para começar. Sem cartão de crédito. Sem complicação.</p>
+  <div class="btns reveal">
+    <a href="https://andradeje86-collab.github.io/Influence-pro3" class="btn-p" target="_blank">📱 Acessar o App Grátis</a>
+  </div>
+  <p style="margin-top:18px;font-size:12px;color:var(--sub)" class="reveal">Já tem conta? <a href="https://andradeje86-collab.github.io/Influence-pro3" style="color:var(--accent);text-decoration:none">Fazer login →</a></p>
+</section>
+
+<footer>
+  <div class="f-logo">INFLUENCE PRO</div>
+  <div class="f-t">© 2025 Influence PRO · Todos os direitos reservados</div>
+  <div class="f-t">Feito para micro influenciadores brasileiros 🇧🇷</div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  function copyPix(){
+    const key='06981774950', btn=document.getElementById('pix-btn');
+    const done=()=>{btn.textContent='✅ Chave Copiada!';btn.style.borderColor='var(--green)';btn.style.color='var(--green)';setTimeout(()=>{btn.textContent='📋 Copiar Chave PIX';btn.style.borderColor='';btn.style.color='';},3000);};
+    if(navigator.clipboard){navigator.clipboard.writeText(key).then(done);}
+    else{const el=document.createElement('textarea');el.value=key;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);done();}
+  }
+
+  const vals=['R$ 2.880','R$ 4.200','R$ 1.650','R$ 3.100'];
+  let vi=0;
+  setInterval(()=>{
+    vi=(vi+1)%vals.length;
+    const el=document.getElementById('phone-val');
+    if(el){el.style.opacity='0';setTimeout(()=>{el.textContent=vals[vi];el.style.opacity='1';el.style.transition='opacity .4s';},200);}
+  },2800);
+</script>
+</body>
+</html>
