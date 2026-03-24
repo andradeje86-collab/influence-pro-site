@@ -421,7 +421,7 @@ window.doLogin = async () => {
   err.style.display="none";
   btn.disabled=true; btn.textContent="Entrando...";
   try {
-    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    const cred = await signInWithEmailAndPassword(auth, usuario, pass);
     // onAuthStateChanged will pick up and render
   } catch(e) {
     err.style.display="block";
