@@ -413,11 +413,11 @@ function showLogin(errMsg) {
 }
 
 window.doLogin = async () => {
-  const email = $("l-email")?.value?.trim();
+  const email = $("usuário")?.value?.trim();
   const pass  = $("l-pass")?.value?.trim();
   const btn   = $("l-btn");
   const err   = $("l-err");
-  if (!email||!pass) return;
+  if (! usuário||!pass) return;
   err.style.display="none";
   btn.disabled=true; btn.textContent="Entrando...";
   try {
