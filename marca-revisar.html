@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Revisar Post — Influence PRO</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#07070F;color:#EAE8F5;min-height:100vh;max-width:480px;margin:0 auto;padding:0}
+    .hdr{background:#0F0F1C;border-bottom:1px solid #1A1A2E;padding:14px 20px;display:flex;align-items:center;gap:10px}
+    .logo{font-size:15px;font-weight:800;background:linear-gradient(135deg,#FBBF24,#F59E0B);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .page{padding:18px}
+    .card{background:#0F0F1C;border:1px solid #1A1A2E;border-radius:16px;padding:18px;margin-bottom:14px}
+    .label{font-size:10px;font-weight:800;color:#6B6880;letter-spacing:1.5px;margin-bottom:6px}
+    .btn-green{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#34D399,#059669);color:#FFF;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:10px}
+    .btn-red{width:100%;padding:12px;border-radius:12px;border:1px solid #F8717140;background:#F8717108;color:#F87171;font-weight:700;font-size:14px;cursor:pointer}
+    .btn-green:disabled,.btn-red:disabled{opacity:.4;cursor:not-allowed}
+    .status-box{border-radius:12px;padding:16px;text-align:center}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:11px 24px;border-radius:24px;font-weight:700;font-size:13px;z-index:999;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
+    .toast.show{opacity:1}
+    .spin{display:inline-block;width:30px;height:30px;border:3px solid #1A1A2E;border-top-color:#FBBF24;border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* LOGIN */
+    .login-wrap{max-width:360px;margin:48px auto;padding:0 20px}
+    .fld{margin-bottom:12px}
+    .fld label{font-size:10px;font-weight:800;color:#6B6880;display:block;margin-bottom:4px;letter-spacing:1px}
+    .fld input{width:100%;background:#0F0F1C;border:1px solid #1A1A2E;border-radius:10px;padding:12px 14px;font-size:14px;color:#EAE8F5;outline:none;font-family:inherit}
+    .fld input:focus{border-color:#FBBF2444}
+    .btn-login{width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#FBBF24,#F59E0B);color:#000;font-weight:800;font-size:15px;cursor:pointer}
+    .btn-login:disabled{opacity:.5;cursor:not-allowed}
+    .err-box{background:#F8717114;border:1px solid #F8717130;border-radius:8px;padding:9px 13px;font-size:12px;color:#F87171;margin-bottom:11px;display:none}
+    textarea{width:100%;background:#07070F;border:1px solid #1A1A2E;border-radius:9px;padding:10px 12px;font-size:13px;color:#EAE8F5;outline:none;min-height:70px;resize:none;font-family:inherit}
+    textarea:focus{border-color:#F8717144}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <span style="font-size:22px">🏷️</span>
+  <div>
+    <div class="logo">Influence PRO · Marcas</div>
+    <div style="font-size:11px;color:#6B6880">Portal de aprovação de posts</div>
+  </div>
+</div>
+
+<div class="page" id="main">
+  <div style="text-align:center;padding:60px 20px">
+    <div class="spin"></div>
+    <div style="color:#6B6880;font-size:13px;margin-top:14px">Carregando...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, onSnapshot, query, where }
+  from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyD7rv-cygkLUyTZydUV3SLe2GH7DV30_Yc",
+  authDomain:"influencer-pro-1b9b0.firebaseapp.com",
+  projectId:"influencer-pro-1b9b0",
+  storageBucket:"influencer-pro-1b9b0.firebasestorage.app",
+  messagingSenderId:"234691340961",
+  appId:"1:234691340961:web:0298046c2c50252a0b5ee0",
+}));
+
+const $ = id => document.getElementById(id);
+function toast(msg, bg="#34D399") {
+  const t=$("toast"); t.textContent=msg; t.style.background=bg;
+  t.style.color=bg==="#34D399"||bg==="#059669"?"#000":"#FFF";
+  t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3500);
+}
+
+// ── Get proposalId from URL: /marca?pid=XXX&email=YYY
+const params     = new URLSearchParams(window.location.search);
+const proposalId = params.get("pid");
+const emailParam = params.get("email")?.toLowerCase();
+
+// ── State
+let proposal  = null;
+let cands     = [];
+let marcaEmail= emailParam||"";
+
+// ── Init
+if (!proposalId) {
+  showLogin();
+} else {
+  loadProposal();
+}
+
+async function loadProposal() {
+  try {
+    // Try marcasPropostas first
+    let snap = await getDoc(doc(db,"marcasPropostas",proposalId));
+    if (!snap.exists()) {
+      snap = await getDoc(doc(db,"marketplace",proposalId));
+    }
+    if (!snap.exists()) { showError("Proposta não encontrada."); return; }
+    proposal = {id:snap.id,...snap.data()};
+
+    // Validate email if provided
+    if (emailParam && proposal.email && proposal.email.toLowerCase() !== emailParam) {
+      showError("Acesso não autorizado para esta proposta.");
+      return;
+    }
+
+    // Listen to candidatures for this proposal
+    onSnapshot(
+      query(collection(db,"mktCandidaturas"), where("proposalId","==",proposalId)),
+      snap2 => {
+        cands = snap2.docs.map(d=>({id:d.id,...d.data()}));
+        renderDashboard();
+      }
+    );
+  } catch(e) {
+    showError("Erro ao carregar. Tente novamente.");
+    console.error(e);
+  }
+}
+
+// ── LOGIN (when no pid in URL)
+function showLogin() {
+  $("main").innerHTML = `
+    <div class="login-wrap">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:42px;margin-bottom:10px">🏷️</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:4px">Portal da Marca</div>
+        <div style="font-size:13px;color:#6B6880">Entre com o e-mail cadastrado na proposta</div>
+      </div>
+      <div class="fld"><label>E-MAIL DA PROPOSTA</label>
+        <input id="m-email" type="email" placeholder="seu@email.com"/>
+      </div>
+      <div class="err-box" id="m-err">❌ Nenhuma proposta encontrada para este e-mail</div>
+      <button class="btn-login" id="m-btn" onclick="loginMarca()">Ver minhas campanhas</button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#6B6880">
+        Não tem uma campanha? <a href="/marcas" style="color:#FBBF24">Cadastre aqui →</a>
+      </div>
+    </div>`;
+}
+
+window.loginMarca = async () => {
+  const email = $("m-email")?.value?.trim().toLowerCase();
+  const btn   = $("m-btn");
+  const err   = $("m-err");
+  if (!email) return;
+  err.style.display="none";
+  btn.disabled=true; btn.textContent="Buscando...";
+  try {
+    // Find proposals by email
+    const snap = await getDocs(query(collection(db,"marcasPropostas"), where("email","==",email)));
+    if (snap.empty) {
+      err.style.display="block";
+      btn.disabled=false; btn.textContent="Ver minhas campanhas";
+      return;
+    }
+    // Show list of proposals for this email
+    const props = snap.docs.map(d=>({id:d.id,...d.data()}));
+    marcaEmail = email;
+    showProposalList(props);
+  } catch(e) {
+    err.textContent="❌ Erro ao buscar. Tente novamente.";
+    err.style.display="block";
+    btn.disabled=false; btn.textContent="Ver minhas campanhas";
+  }
+};
+
+function showProposalList(props) {
+  $("main").innerHTML = `
+    <div style="font-size:18px;font-weight:800;margin-bottom:4px">Suas campanhas</div>
+    <div style="font-size:12px;color:#6B6880;margin-bottom:16px">${marcaEmail}</div>
+    ${props.map(p=>`
+      <div class="card" style="cursor:pointer" onclick="window.location.href='?pid=${p.id}&email=${encodeURIComponent(marcaEmail)}'">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-size:15px;font-weight:800">${p.marca}</div>
+            <div style="font-size:11px;color:#6B6880">${p.tipo} · ${p.vagas} vagas · R$ ${p.valor}</div>
+          </div>
+          <div style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${p.status==="ativo"?"#34D39918":"#FBBF2418"};color:${p.status==="ativo"?"#34D399":"#FBBF24"}">
+            ${p.status==="ativo"?"● Ativa":"⏳ Aguardando aprovação"}
+          </div>
+        </div>
+        <div style="font-size:12px;color:#6B6880">${p.briefing?.substr(0,80)||"—"}...</div>
+        <div style="margin-top:10px;font-size:12px;color:#7C6AF7;font-weight:700">Ver posts para revisar →</div>
+      </div>`).join("")}`;
+}
+
+// ── DASHBOARD
+function renderDashboard() {
+  if (!proposal) return;
+
+  const aguardando = cands.filter(c=>c.status==="aguardando_marca");
+  const aprovados  = cands.filter(c=>c.status==="pago");
+  const pendentes  = cands.filter(c=>c.status==="pendente"||c.status==="aprovado"||c.status==="em_analise");
+  const recusados  = cands.filter(c=>c.status==="recusado");
+
+  $("main").innerHTML = `
+    <!-- Header da campanha -->
+    <div class="card" style="border-color:#FBBF2444;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:17px;font-weight:800">${proposal.marca}</div>
+          <div style="font-size:12px;color:#6B6880">${proposal.tipo} · ${proposal.prazo||"7 dias"} · ${proposal.vagasRestantes??proposal.vagas??0} vagas restantes</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:800;color:#FBBF24">R$ ${proposal.valor}</div>
+          <div style="font-size:10px;color:#6B6880">por post</div>
+        </div>
+      </div>
+      <div style="background:#07070F;border-radius:8px;padding:8px 11px;font-size:12px;color:#9CA3AF;line-height:1.5">${proposal.briefing||"—"}</div>
+    </div>
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px">
+      ${[
+        {l:"Aguardando revisão",v:aguardando.length,c:"#FBBF24"},
+        {l:"Aprovados",v:aprovados.length,c:"#34D399"},
+        {l:"Em andamento",v:pendentes.length,c:"#7C6AF7"},
+      ].map(s=>`<div style="background:${s.c}0C;border:1px solid ${s.c}28;border-radius:12px;padding:10px 4px;text-align:center">
+        <div style="font-size:20px;font-weight:800;color:${s.c}">${s.v}</div>
+        <div style="font-size:9px;color:#6B6880;margin-top:2px">${s.l}</div>
+      </div>`).join("")}
+    </div>
+
+    <!-- Posts para revisar -->
+    ${aguardando.length>0?`
+      <div style="font-size:11px;font-weight:800;color:#FBBF24;letter-spacing:1.5px;margin-bottom:10px">⏳ AGUARDANDO SUA REVISÃO (${aguardando.length})</div>
+      ${aguardando.map(c=>reviewCard(c,"aguardando")).join("")}
+    `:""}
+
+    <!-- Posts aprovados -->
+    ${aprovados.length>0?`
+      <div style="font-size:11px;font-weight:800;color:#34D399;letter-spacing:1.5px;margin-bottom:10px;margin-top:${aguardando.length>0?"16px":"0"}">✅ APROVADOS E PAGOS (${aprovados.length})</div>
+      ${aprovados.map(c=>reviewCard(c,"pago")).join("")}
+    `:""}
+
+    <!-- Em andamento -->
+    ${pendentes.length>0?`
+      <div style="font-size:11px;font-weight:800;color:#7C6AF7;letter-spacing:1.5px;margin-bottom:10px;margin-top:16px">🔄 EM ANDAMENTO (${pendentes.length})</div>
+      ${pendentes.map(c=>reviewCard(c,"andamento")).join("")}
+    `:""}
+
+    ${aguardando.length===0&&aprovados.length===0&&pendentes.length===0?`
+      <div style="text-align:center;padding:40px 20px;color:#6B6880">
+        <div style="font-size:40px;margin-bottom:12px">⏳</div>
+        <p>Nenhum post para revisar ainda.<br/>Os influenciadores aprovados vão postar em breve!</p>
+      </div>
+    `:""}
+
+    <!-- Info box -->
+    <div style="background:#7C6AF710;border:1px solid #7C6AF730;border-radius:12px;padding:12px 14px;margin-top:8px;font-size:12px;color:#9CA3AF;line-height:1.6">
+      🔒 O pagamento ao influenciador fica <strong style="color:#EAE8F5">bloqueado</strong> até você clicar em <strong style="color:#34D399">✅ Aprovar post</strong>. Só então a plataforma transfere o valor.
+    </div>`;
+}
+
+function reviewCard(c, stage) {
+  if (stage === "aguardando") {
+    return `
+    <div class="card" style="border-color:#FBBF2444;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:40px;height:40px;border-radius:"50%";background:linear-gradient(135deg,#7C6AF7,#6366F1);display:flex;align-items:center;justify-content:center;font-weight:800;color:#FFF;font-size:14px;flex-shrink:0">${c.userAvatar||"?"}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${c.userName}</div>
+          <div style="font-size:11px;color:#6B6880">@${c.userHandle||"—"} · ${(c.followers||0).toLocaleString("pt-BR")} seguidores</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:14px;font-weight:800;color:#FBBF24">R$ ${(c.valorInflu||0).toFixed(2)}</div>
+          <div style="font-size:10px;color:#6B6880">aguardando</div>
+        </div>
+      </div>
+
+      <!-- Post link -->
+      <div style="background:#07070F;border:1px solid #1A1A2E;border-radius:10px;padding:12px;margin-bottom:12px">
+        <div class="label">LINK DO POST PUBLICADO</div>
+        <a href="${c.linkPost}" target="_blank"
+          style="font-size:13px;color:#7C6AF7;word-break:break-all;font-weight:600">${c.linkPost||"—"}</a>
+        <div style="margin-top:8px">
+          <a href="${c.linkPost}" target="_blank"
+            style="display:inline-block;padding:7px 16px;border-radius:8px;background:#7C6AF718;border:1px solid #7C6AF730;color:#7C6AF7;font-size:12px;font-weight:700;text-decoration:none">
+            🔗 Abrir post →
+          </a>
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:#6B6880;margin-bottom:12px">Entregue em: ${c.dataEntrega||"—"}</div>
+
+      <!-- Approve / Reject -->
+      <button class="btn-green" id="btn-apr-${c.id}" onclick="aprovarPost('${c.id}',${c.valorInflu||0})">
+        ✅ Aprovar post — liberar R$ ${(c.valorInflu||0).toFixed(2)}
+      </button>
+      <div style="margin-bottom:8px">
+        <div class="label" style="margin-top:0">MOTIVO DA RECUSA (se recusar)</div>
+        <textarea id="motivo-${c.id}" placeholder="Ex: O post não mencionou nossa marca, faltou a hashtag..."></textarea>
+      </div>
+      <button class="btn-red" id="btn-rec-${c.id}" onclick="recusarPost('${c.id}')">
+        ❌ Recusar — pedir refazer
+      </button>
+    </div>`;
+  }
+
+  if (stage === "pago") {
+    return `
+    <div class="card" style="border-color:#34D39944;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#34D399,#059669);display:flex;align-items:center;justify-content:center;font-weight:800;color:#FFF;font-size:13px">${c.userAvatar||"?"}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${c.userName}</div>
+          <div style="font-size:11px;color:#6B6880">@${c.userHandle||"—"}</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:#34D399">✅ Pago</div>
+      </div>
+      <a href="${c.linkPost}" target="_blank" style="font-size:12px;color:#34D399;word-break:break-all">🔗 ${c.linkPost||"—"}</a>
+    </div>`;
+  }
+
+  // andamento
+  const stageLabel = {pendente:"⏳ Aguardando aprovação do admin",aprovado:"📝 Preparando post",em_analise:"🔍 Em análise interna"}[c.status]||c.status;
+  return `
+  <div class="card" style="margin-bottom:10px;opacity:.8">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:13px;font-weight:700">${c.userName}</div>
+        <div style="font-size:11px;color:#6B6880">@${c.userHandle||"—"}</div>
+      </div>
+      <div style="font-size:11px;color:#7C6AF7;font-weight:600">${stageLabel}</div>
+    </div>
+  </div>`;
+}
+
+// ── ACTIONS
+window.aprovarPost = async (candId, valorInflu) => {
+  if (!confirm(`Confirmar aprovação? O influenciador receberá R$ ${valorInflu.toFixed(2)} via PIX.`)) return;
+  const btn = document.getElementById(`btn-apr-${candId}`);
+  if (btn) { btn.disabled=true; btn.textContent="Aprovando..."; }
+  try {
+    await updateDoc(doc(db,"mktCandidaturas",candId),{
+      status:"pago",
+      dataPagamento: new Date().toISOString().substr(0,10),
+      aprovadoPelaMarca: true,
+      dataAprovacaoMarca: new Date().toISOString().substr(0,10),
+    });
+    toast("✅ Post aprovado! Pagamento liberado.","#34D399");
+  } catch(e) {
+    if (btn) { btn.disabled=false; btn.textContent=`✅ Aprovar post — liberar R$ ${valorInflu.toFixed(2)}`; }
+    toast("❌ Erro ao aprovar","#F87171");
+  }
+};
+
+window.recusarPost = async (candId) => {
+  const motivo = document.getElementById(`motivo-${candId}`)?.value?.trim();
+  if (!motivo) { toast("Descreva o motivo da recusa antes de continuar","#F87171"); return; }
+  if (!confirm("Recusar este post e pedir que o influenciador refaça?")) return;
+  const btn = document.getElementById(`btn-rec-${candId}`);
+  if (btn) { btn.disabled=true; }
+  try {
+    await updateDoc(doc(db,"mktCandidaturas",candId),{
+      status:"aprovado",  // back to approved so influencer can resubmit
+      linkPost: null,
+      motivoRecusa: motivo,
+      dataRecusaMarca: new Date().toISOString().substr(0,10),
+    });
+    toast("Post recusado. O influenciador será notificado para refazer.","#FBBF24");
+  } catch(e) {
+    if (btn) { btn.disabled=false; }
+    toast("❌ Erro","#F87171");
+  }
+};
+
+function showError(msg) {
+  $("main").innerHTML = `
+    <div style="text-align:center;padding:60px 24px">
+      <div style="font-size:44px;margin-bottom:14px">⚠️</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px">${msg}</div>
+      <a href="/marcas" style="font-size:13px;color:#FBBF24">← Cadastrar nova campanha</a>
+    </div>`;
+}
+</script>
+</body>
+</html>
