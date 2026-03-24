@@ -409,9 +409,10 @@ function showLogin(errMsg) {
       <div class="back-link"><a href="https://app.influpro.com.br">← Voltar ao app</a></div>
     </div>`;
   if (errMsg) $("l-err").style.display="block";
-  $("l-pass")?.addEventListener("keyup", e=>{ if(e.key==="Enter") doLogin(); });
+  $("l-pass")?.addEventListener("keyup", e=>{ 
+if(e.key==="Enter") doLogin();
+  });
 }
-
 window.doLogin = async () => {
   const email = $("usuário")?.value?.trim();
   const pass  = $("l-pass")?.value?.trim();
